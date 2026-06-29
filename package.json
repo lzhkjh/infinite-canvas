@@ -11,7 +11,9 @@
     "check": "npm run check:types && npm run check:biome",
     "lint": "npm run check:biome",
     "format": "biome check --write --unsafe",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@react-three/drei": "10.7.7",
@@ -30,5 +32,6 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "typescript": "~5.9.3",
     "vite": "^7.2.7"
-  }
+  },
+  "homepage": "https://{YOUR_GITHUB_USERNAME}.github.io/infinite-canvas"
 }
