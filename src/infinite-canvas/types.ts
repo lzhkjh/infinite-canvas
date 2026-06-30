@@ -1,3 +1,13 @@
+﻿export interface GestureState {
+  forward: boolean;
+  backward: boolean;
+  left: boolean;
+  right: boolean;
+  up: boolean;
+  down: boolean;
+  velocity: number;
+}
+
 import type * as THREE from "three";
 
 export type MediaItem = {
@@ -7,6 +17,7 @@ export type MediaItem = {
 };
 
 export type InfiniteCanvasProps = {
+  gestureState?: GestureState;
   media: MediaItem[];
   onTextureProgress?: (progress: number) => void;
   showFps?: boolean;
@@ -33,3 +44,5 @@ export type PlaneData = {
   scale: THREE.Vector3;
   mediaIndex: number;
 };
+
+

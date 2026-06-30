@@ -1,4 +1,4 @@
-import { KeyboardControls, Stats, useKeyboardControls, useProgress } from "@react-three/drei";
+﻿import { KeyboardControls, Stats, useKeyboardControls, useProgress } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as React from "react";
 import * as THREE from "three";
@@ -287,10 +287,11 @@ const createInitialState = (camZ: number): ControllerState => ({
   pendingChunk: null,
 });
 
-function SceneController({ media, onTextureProgress }: { media: MediaItem[]; onTextureProgress?: (progress: number) => void }) {
+function SceneController({ media, onTextureProgress, gestureState }: { media: MediaItem[]; onTextureProgress?: (progress: number) => void; gestureState?: any }) {
   const { camera, gl } = useThree();
   const isTouchDevice = useIsTouchDevice();
   const [, getKeys] = useKeyboardControls<keyof KeyboardKeys>();
+    const gesture = gestureState || { forward: false, backward: false, left: false, right: false, up: false, down: false, velocity: 0 };
 
   const state = React.useRef<ControllerState>(createInitialState(INITIAL_CAMERA_Z));
   const cameraGridRef = React.useRef<CameraGridState>({ cx: 0, cy: 0, cz: 0, camZ: camera.position.z });
@@ -415,10 +416,13 @@ function SceneController({ media, onTextureProgress }: { media: MediaItem[]; onT
 
     const { forward, backward, left, right, up, down } = getKeys();
     if (forward) s.targetVel.z -= KEYBOARD_SPEED;
+      if (gesture.forward) s.targetVel.z -= KEYBOARD_SPEED * gesture.velocity;
     if (backward) s.targetVel.z += KEYBOARD_SPEED;
     if (left) s.targetVel.x -= KEYBOARD_SPEED;
+      if (gesture.left) s.targetVel.x -= KEYBOARD_SPEED * gesture.velocity;
     if (right) s.targetVel.x += KEYBOARD_SPEED;
     if (down) s.targetVel.y -= KEYBOARD_SPEED;
+      if (gesture.down) s.targetVel.y -= KEYBOARD_SPEED * gesture.velocity;
     if (up) s.targetVel.y += KEYBOARD_SPEED;
 
     const isZooming = Math.abs(s.velocity.z) > 0.05;
@@ -510,19 +514,7 @@ function SceneController({ media, onTextureProgress }: { media: MediaItem[]; onT
   );
 }
 
-export function InfiniteCanvasScene({
-  media,
-  onTextureProgress,
-  showFps = false,
-  showControls = false,
-  cameraFov = 60,
-  cameraNear = 1,
-  cameraFar = 500,
-  fogNear = 120,
-  fogFar = 320,
-  backgroundColor = "#ffffff",
-  fogColor = "#ffffff",
-}: InfiniteCanvasProps) {
+export function InfiniteCanvasScene({ media, onTextureProgress, showFps = false, showControls = false, cameraFov = 60, cameraNear = 1, cameraFar = 500, fogNear = 120, fogFar = 320, backgroundColor = "#ffffff", fogColor = "#ffffff", gestureState }: InfiniteCanvasProps & { gestureState?: any }) {
   const isTouchDevice = useIsTouchDevice();
   const dpr = Math.min(window.devicePixelRatio || 1, isTouchDevice ? 1.25 : 1.5);
 
@@ -542,7 +534,7 @@ export function InfiniteCanvasScene({
         >
           <color attach="background" args={[backgroundColor]} />
           <fog attach="fog" args={[fogColor, fogNear, fogFar]} />
-          <SceneController media={media} onTextureProgress={onTextureProgress} />
+          <SceneController media={media} onTextureProgress={onTextureProgress} gestureState={gestureState} />
           {showFps && <Stats className={styles.stats} />}
         </Canvas>
 
@@ -550,11 +542,11 @@ export function InfiniteCanvasScene({
           <div className={styles.controlsPanel}>
             {isTouchDevice ? (
               <>
-                <b>Drag</b> Pan · <b>Pinch</b> Zoom
+                <b>Drag</b> Pan 路 <b>Pinch</b> Zoom
               </>
             ) : (
               <>
-                <b>WASD</b> Move · <b>QE</b> Up/Down · <b>Scroll/Space</b> Zoom
+                <b>WASD</b> Move 路 <b>QE</b> Up/Down 路 <b>Scroll/Space</b> Zoom
               </>
             )}
           </div>
@@ -563,3 +555,13 @@ export function InfiniteCanvasScene({
     </KeyboardControls>
   );
 }
+
+
+
+
+
+
+
+
+
+
