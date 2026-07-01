@@ -17,7 +17,7 @@ interface GestureControlResult {
 }
 
 export function useHandibleGesture(): GestureControlResult {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null as unknown as HTMLVideoElement);
   const [isGestureActive, setIsGestureActive] = useState(false);
   const [gestureState, setGestureState] = useState({
     forward: false,
@@ -60,7 +60,6 @@ export function useHandibleGesture(): GestureControlResult {
       });
       streamRef.current = stream;
 
-      // Wait for video element to mount in DOM
       let retries = 0;
       while (!videoRef.current && retries < 50) {
         await new Promise((r) => setTimeout(r, 100));
