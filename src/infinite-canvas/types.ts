@@ -14,6 +14,11 @@ export type MediaItem = {
   url: string;
   width: number;
   height: number;
+  title?: string;
+  artist?: string;
+  year?: string;
+  link?: string;
+  type?: string;
 };
 
 export type InfiniteCanvasProps = {
@@ -21,7 +26,8 @@ export type InfiniteCanvasProps = {
   media: MediaItem[];
   onTextureProgress?: (progress: number) => void;
   showFps?: boolean;
-  showControls?: boolean;`n    onPlaneClick?: (mediaItem: MediaItem | null) => void;
+  showControls?: boolean;
+  onPlaneClick?: (mediaItem: MediaItem | null) => void;
   cameraFov?: number;
   cameraNear?: number;
   cameraFar?: number;
@@ -44,5 +50,3 @@ export type PlaneData = {
   scale: THREE.Vector3;
   mediaIndex: number;
 };
-
-
