@@ -585,23 +585,21 @@ export function InfiniteCanvasScene({ media, onTextureProgress, showFps = false,
           <div className={styles.controlsPanel}>
             {isTouchDevice ? (
               <>
-                <b>Drag</b> Pan 鐠?<b>Pinch</b> Zoom
+                <b>Drag</b> Pan 闂?<b>Pinch</b> Zoom
               </>
             ) : (
               <>
-                <b>WASD</b> Move 鐠?<b>QE</b> Up/Down 鐠?<b>Scroll/Space</b> Zoom
+                <b>WASD</b> Move 闂?<b>QE</b> Up/Down 闂?<b>Scroll/Space</b> Zoom
               </>
             )}
           </div>
         )}
+        <ArtworkDetail artwork={selectedArtwork} onClose={() => setSelectedArtwork(null)} />
       </div>
-            <ArtworkDetail artwork={selectedArtwork} onClose={() => setSelectedArtwork(null)} />
+
     </KeyboardControls>
   );
 }
-
-
-
 
 
 
