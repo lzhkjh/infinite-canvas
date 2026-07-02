@@ -1,4 +1,5 @@
 ﻿import { KeyboardControls, Stats, useKeyboardControls, useProgress } from "@react-three/drei";
+import { ArtworkDetail } from "~/src/artwork-detail";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as React from "react";
 import * as THREE from "three";
@@ -255,6 +256,8 @@ function Chunk({
   );
 }
 
+type OnPlaneClick = (mediaItem: MediaItem | null) => void;
+
 type ControllerState = {
   velocity: { x: number; y: number; z: number };
   targetVel: { x: number; y: number; z: number };
@@ -287,11 +290,15 @@ const createInitialState = (camZ: number): ControllerState => ({
   pendingChunk: null,
 });
 
-function SceneController({ media, onTextureProgress, gestureState }: { media: MediaItem[]; onTextureProgress?: (progress: number) => void; gestureState?: any }) {
+function SceneController({ media, onTextureProgress, gestureState, onPlaneClick }: { media: MediaItem[]; onTextureProgress?: (progress: number) => void; gestureState?: any }) {
   const { camera, gl } = useThree();
   const isTouchDevice = useIsTouchDevice();
   const [, getKeys] = useKeyboardControls<keyof KeyboardKeys>();
     const gesture = gestureState || { forward: false, backward: false, left: false, right: false, up: false, down: false, velocity: 0 };
+
+  const [selectedArtwork, setSelectedArtwork] = React.useState<MediaItem | null>(null);
+  const raycaster = React.useRef(new THREE.Raycaster());
+  const clickMouse = React.useRef(new THREE.Vector2());
 
   const state = React.useRef<ControllerState>(createInitialState(INITIAL_CAMERA_Z));
   const cameraGridRef = React.useRef<CameraGridState>({ cx: 0, cy: 0, cz: 0, camZ: camera.position.z });
@@ -415,15 +422,45 @@ function SceneController({ media, onTextureProgress, gestureState }: { media: Me
     const now = performance.now();
 
     const { forward, backward, left, right, up, down } = getKeys();
+
+    // Handle click detection
+    if (clickMouse.current.x !== 0 || clickMouse.current.y !== 0) {
+      raycaster.current.setFromCamera(clickMouse.current, camera);
+      const allMeshes: THREE.Object3D[] = [];
+      camera.traverse((obj) => {
+        if (obj instanceof THREE.Mesh) allMeshes.push(obj);
+      });
+      const intersects = raycaster.current.intersectObjects(allMeshes, false);
+      if (intersects.length > 0) {
+        const hit = intersects[0];
+        if (hit.object.visible && onPlaneClick) {
+          const currentChunks = chunksRef.current;
+          for (const chunk of currentChunks) {
+            const planes = generateChunkPlanesCached(chunk.cx, chunk.cy, chunk.cz);
+            for (const plane of planes) {
+              const mi = media[plane.mediaIndex % media.length];
+              if (mi && Math.abs(plane.position.x - hit.point.x) < plane.scale.x * 0.6 && Math.abs(plane.position.y - hit.point.y) < plane.scale.y * 0.6) {
+                onPlaneClick(mi);
+                break;
+              }
+            }
+          }
+        }
+      }
+      clickMouse.current.set(0, 0);
+    }
     if (forward) s.targetVel.z -= KEYBOARD_SPEED;
       if (gesture.forward) s.targetVel.z -= KEYBOARD_SPEED * gesture.velocity;
     if (backward) s.targetVel.z += KEYBOARD_SPEED;
+      if (gesture.backward) s.targetVel.z += KEYBOARD_SPEED * gesture.velocity;
     if (left) s.targetVel.x -= KEYBOARD_SPEED;
       if (gesture.left) s.targetVel.x -= KEYBOARD_SPEED * gesture.velocity;
     if (right) s.targetVel.x += KEYBOARD_SPEED;
+      if (gesture.right) s.targetVel.x += KEYBOARD_SPEED * gesture.velocity;
     if (down) s.targetVel.y -= KEYBOARD_SPEED;
       if (gesture.down) s.targetVel.y -= KEYBOARD_SPEED * gesture.velocity;
     if (up) s.targetVel.y += KEYBOARD_SPEED;
+if (gesture.up) s.targetVel.y += KEYBOARD_SPEED * gesture.velocity;
 
     const isZooming = Math.abs(s.velocity.z) > 0.05;
     const zoomFactor = clamp(s.basePos.z / 50, 0.3, 2.0);
@@ -508,13 +545,17 @@ function SceneController({ media, onTextureProgress, gestureState }: { media: Me
   return (
     <>
       {chunks.map((chunk) => (
-        <Chunk key={chunk.key} cx={chunk.cx} cy={chunk.cy} cz={chunk.cz} media={media} cameraGridRef={cameraGridRef} />
+        <Chunk key={chunk.key} cx={chunk.cx} cy={chunk.cy} cz={chunk.cz} media={media} cameraGridRef={cameraGridRef} onPlaneClick={onPlaneClick} />
       ))}
     </>
   );
 }
 
 export function InfiniteCanvasScene({ media, onTextureProgress, showFps = false, showControls = false, cameraFov = 60, cameraNear = 1, cameraFar = 500, fogNear = 120, fogFar = 320, backgroundColor = "#ffffff", fogColor = "#ffffff", gestureState }: InfiniteCanvasProps & { gestureState?: any }) {
+  const [selectedArtwork, setSelectedArtwork] = React.useState<MediaItem | null>(null);
+  const handlePlaneClick = React.useCallback((item: MediaItem | null) => {
+    setSelectedArtwork(item);
+  }, []);
   const isTouchDevice = useIsTouchDevice();
   const dpr = Math.min(window.devicePixelRatio || 1, isTouchDevice ? 1.25 : 1.5);
 
@@ -534,7 +575,7 @@ export function InfiniteCanvasScene({ media, onTextureProgress, showFps = false,
         >
           <color attach="background" args={[backgroundColor]} />
           <fog attach="fog" args={[fogColor, fogNear, fogFar]} />
-          <SceneController media={media} onTextureProgress={onTextureProgress} gestureState={gestureState} />
+          <SceneController media={media} onTextureProgress={onTextureProgress} gestureState={gestureState} onPlaneClick={handlePlaneClick} />
           {showFps && <Stats className={styles.stats} />}
         </Canvas>
 
@@ -552,6 +593,7 @@ export function InfiniteCanvasScene({ media, onTextureProgress, showFps = false,
           </div>
         )}
       </div>
+            <ArtworkDetail artwork={selectedArtwork} onClose={() => setSelectedArtwork(null)} />
     </KeyboardControls>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+﻿import { useState, useEffect, useRef, useCallback } from "react";
 
 interface GestureControlResult {
   videoRef: React.RefObject<HTMLVideoElement>;
@@ -13,6 +13,8 @@ interface GestureControlResult {
     up: boolean;
     down: boolean;
     velocity: number;
+    gestureName: string;
+    extendedFingers: number;
   };
 }
 
@@ -27,11 +29,18 @@ export function useHandibleGesture(): GestureControlResult {
     up: false,
     down: false,
     velocity: 0,
+    gestureName: "none",
+    extendedFingers: 0,
   });
 
   const handLandmarkerRef = useRef<any>(null);
   const animationFrameRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  // Stabilization: require N consecutive frames of the same gesture before switching
+  const GESTURE_STABLE_FRAMES = 8;
+  const lastGestureRef = useRef<string>("none");
+  const gestureFrameCountRef = useRef<number>(0);
 
   const startGestureControl = useCallback(async () => {
     try {
@@ -104,7 +113,20 @@ export function useHandibleGesture(): GestureControlResult {
     }
 
     handLandmarkerRef.current = null;
+    lastGestureRef.current = "none";
+    gestureFrameCountRef.current = 0;
     setIsGestureActive(false);
+    setGestureState({
+      forward: false,
+      backward: false,
+      left: false,
+      right: false,
+      up: false,
+      down: false,
+      velocity: 0,
+      gestureName: "none",
+      extendedFingers: 0,
+    });
   }, []);
 
   useEffect(() => {
@@ -136,14 +158,79 @@ export function useHandibleGesture(): GestureControlResult {
           const middleTip = landmarks[12];
           const ringTip = landmarks[16];
           const pinkyTip = landmarks[20];
+          const thumbTip = landmarks[4];
           const indexUp = indexTip.y < landmarks[6].y;
           const middleUp = middleTip.y < landmarks[9].y;
-          const ringUp = ringTip.y < landmarks[12].y;
-          const pinkyUp = pinkyTip.y < landmarks[15].y;
+          const ringUp = ringTip.y < landmarks[14].y;
+          const pinkyUp = pinkyTip.y < landmarks[18].y;
+          const thumbUp = thumbTip.x > landmarks[3].x;
           const extendedCount = [indexUp, middleUp, ringUp, pinkyUp].filter(
             Boolean
           ).length;
-          const newState = {
+
+          // Determine gesture name from extended fingers
+          let gestureName = "none";
+          if (extendedCount === 1 && indexUp) {
+            gestureName = "forward";
+          } else if (extendedCount === 2 && indexUp && middleUp) {
+            gestureName = "backward";
+          } else if (extendedCount === 3 && indexUp && middleUp && ringUp) {
+            gestureName = "left";
+          } else if (extendedCount === 4 && thumbUp) {
+            gestureName = "down";
+          } else if (extendedCount === 4) {
+            gestureName = "right";
+          } else if (extendedCount === 0) {
+            gestureName = "up";
+          }
+
+          // Stabilization: only switch gesture after N consecutive frames
+          if (lastGestureRef.current === gestureName) {
+            gestureFrameCountRef.current += 1;
+            if (gestureFrameCountRef.current >= GESTURE_STABLE_FRAMES) {
+              // Apply gesture
+              const newState = {
+                forward: gestureName === "forward",
+                backward: gestureName === "backward",
+                left: gestureName === "left",
+                right: gestureName === "right",
+                up: gestureName === "up",
+                down: gestureName === "down",
+                velocity: 0.8,
+                gestureName: gestureName,
+                extendedFingers: extendedCount,
+              };
+              setGestureState(newState);
+            }
+          } else {
+            // New gesture detected, reset counter
+            lastGestureRef.current = gestureName;
+            gestureFrameCountRef.current = 1;
+            
+            if (gestureFrameCountRef.current >= GESTURE_STABLE_FRAMES) {
+              const newState = {
+                forward: gestureName === "forward",
+                backward: gestureName === "backward",
+                left: gestureName === "left",
+                right: gestureName === "right",
+                up: gestureName === "up",
+                down: gestureName === "down",
+                velocity: 0.8,
+                gestureName: gestureName,
+                extendedFingers: extendedCount,
+              };
+              setGestureState(newState);
+            } else {
+              // Not stable yet, keep previous state but don't apply new one
+              const prevState = gestureState;
+              setGestureState(prevState);
+            }
+          }
+        } else {
+          // No hand detected - reset gesture
+          lastGestureRef.current = "none";
+          gestureFrameCountRef.current = 0;
+          setGestureState({
             forward: false,
             backward: false,
             left: false,
@@ -151,24 +238,9 @@ export function useHandibleGesture(): GestureControlResult {
             up: false,
             down: false,
             velocity: 0,
-          };
-          if (extendedCount === 1 && indexUp) {
-            newState.forward = true;
-            newState.velocity = 0.8;
-          } else if (extendedCount === 2 && indexUp && middleUp) {
-            newState.backward = true;
-            newState.velocity = 0.6;
-          } else if (extendedCount === 3 && indexUp && middleUp && ringUp) {
-            newState.left = true;
-            newState.velocity = 0.5;
-          } else if (extendedCount === 4 && ringTip.y > pinkyTip.y) {
-            newState.right = true;
-            newState.velocity = 0.5;
-          } else if (extendedCount === 0) {
-            newState.up = true;
-            newState.velocity = 0.4;
-          }
-          setGestureState(newState);
+            gestureName: "none",
+            extendedFingers: 0,
+          });
         }
       }
       animationFrameRef.current = requestAnimationFrame(detectLoop);

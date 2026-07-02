@@ -1,4 +1,4 @@
-﻿export interface GestureState {
+export interface GestureState {
   forward: boolean;
   backward: boolean;
   left: boolean;
@@ -21,7 +21,7 @@ export type InfiniteCanvasProps = {
   media: MediaItem[];
   onTextureProgress?: (progress: number) => void;
   showFps?: boolean;
-  showControls?: boolean;
+  showControls?: boolean;`n    onPlaneClick?: (mediaItem: MediaItem | null) => void;
   cameraFov?: number;
   cameraNear?: number;
   cameraFar?: number;
