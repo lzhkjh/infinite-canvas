@@ -308,7 +308,7 @@ const createInitialState = (camZ: number): ControllerState => ({
   pendingChunk: null,
 });
 
-function SceneController({ media, onTextureProgress, gestureState, onPlaneClick }: { media: MediaItem[]; onTextureProgress?: (progress: number) => void; gestureState?: any; onPlaneClick?: (item: MediaItem | null) => void }) {
+function SceneController({ media, onTextureProgress, gestureState }: { media: MediaItem[]; onTextureProgress?: (progress: number) => void; gestureState?: any; onPlaneClick?: (item: MediaItem | null) => void }) {
   const { camera, gl } = useThree();
   const isTouchDevice = useIsTouchDevice();
   const [, getKeys] = useKeyboardControls<keyof KeyboardKeys>();
@@ -320,7 +320,6 @@ function SceneController({ media, onTextureProgress, gestureState, onPlaneClick 
   const state = React.useRef<ControllerState>(createInitialState(INITIAL_CAMERA_Z));
 
   const cameraGridRef = React.useRef<CameraGridState>({ cx: 0, cy: 0, cz: 0, camZ: camera.position.z });
-  const chunksRef = React.useRef<ChunkData[]>([]);
   const [chunks, setChunks] = React.useState<ChunkData[]>([]);
 
   const { progress } = useProgress();
@@ -552,7 +551,7 @@ export function InfiniteCanvasScene({ media, onTextureProgress, showFps = false,
 
   React.useEffect(() => {
     setOnPlaneClick(handlePlaneClick);
-    return () => setOnPlaneClick(null);
+    return () => {};
   }, [handlePlaneClick]);
   const isTouchDevice = useIsTouchDevice();
   const dpr = Math.min(window.devicePixelRatio || 1, isTouchDevice ? 1.25 : 1.5);

@@ -1,6 +1,5 @@
-import * as React from "react";
-import { InfiniteCanvasScene } from "./scene";
+import { InfiniteCanvasScene } from './scene';
 
-export function InfiniteCanvas(props) {
+export function InfiniteCanvas(props: any) {
   return <InfiniteCanvasScene {...props} />;
 }
