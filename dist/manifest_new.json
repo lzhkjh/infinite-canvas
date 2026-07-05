@@ -1,0 +1,86 @@
+[
+  {
+    "url": "artworks/img1.jpg",
+    "type": "image",
+    "title": "Photo 1",
+    "width": 6000,
+    "height": 4000
+  },
+  {
+    "url": "artworks/img2.jpg",
+    "type": "image",
+    "title": "Photo 2",
+    "width": 6000,
+    "height": 4000
+  },
+  {
+    "url": "artworks/img3.jpg",
+    "type": "image",
+    "title": "Photo 3",
+    "width": 6000,
+    "height": 4000
+  },
+  {
+    "url": "artworks/img4.jpg",
+    "type": "image",
+    "title": "Photo 4",
+    "width": 6000,
+    "height": 4000
+  },
+  {
+    "url": "artworks/img5.jpg",
+    "type": "image",
+    "title": "Photo 5",
+    "width": 6000,
+    "height": 4000
+  },
+  {
+    "url": "artworks/img6.jpg",
+    "type": "image",
+    "title": "Photo 6",
+    "width": 6000,
+    "height": 4000
+  },
+  {
+    "url": "artworks/img7.jpg",
+    "type": "image",
+    "title": "Photo 7",
+    "width": 6000,
+    "height": 4000
+  },
+  {
+    "url": "artworks/img8.jpg",
+    "type": "image",
+    "title": "Photo 8",
+    "width": 6000,
+    "height": 4000
+  },
+  {
+    "url": "artworks/img9.jpg",
+    "type": "image",
+    "title": "Photo 9",
+    "width": 6000,
+    "height": 4000
+  },
+  {
+    "url": "artworks/img10.jpg",
+    "type": "image",
+    "title": "Photo 10",
+    "width": 6000,
+    "height": 4000
+  },
+  {
+    "url": "artworks/img11.jpg",
+    "type": "image",
+    "title": "Photo 11",
+    "width": 6000,
+    "height": 4000
+  },
+  {
+    "url": "artworks/img12.jpg",
+    "type": "image",
+    "title": "Photo 12",
+    "width": 6000,
+    "height": 4000
+  }
+]
