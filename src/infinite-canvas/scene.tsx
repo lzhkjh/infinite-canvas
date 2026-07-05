@@ -1,3 +1,10 @@
+
+// Shared click handler
+let _onPlaneClick: ((item: MediaItem) => void) | null = null;
+export function setOnPlaneClick(cb: (item: MediaItem) => void) {
+  _onPlaneClick = cb;
+}
+
 import { KeyboardControls, Stats, useKeyboardControls, useProgress } from "@react-three/drei";
 import { ArtworkDetail } from "~/src/artwork-detail";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -185,7 +192,18 @@ function MediaPlane({
   }
 
   return (
-    <mesh ref={meshRef} position={position} scale={displayScale} visible={false} geometry={PLANE_GEOMETRY}>
+    <mesh
+      ref={meshRef}
+      position={position}
+      scale={displayScale}
+      visible={false}
+      geometry={PLANE_GEOMETRY}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.cancelBubble = true;
+        _onPlaneClick?.(media);
+      }}
+    >
       <meshBasicMaterial ref={materialRef} transparent opacity={0} side={THREE.DoubleSide} />
     </mesh>
   );
@@ -297,8 +315,7 @@ function SceneController({ media, onTextureProgress, gestureState, onPlaneClick 
     const gesture = gestureState || { forward: false, backward: false, left: false, right: false, up: false, down: false, velocity: 0 };
 
 
-  const raycaster = React.useRef(new THREE.Raycaster());
-  const clickMouse = React.useRef(new THREE.Vector2());
+
 
   const state = React.useRef<ControllerState>(createInitialState(INITIAL_CAMERA_Z));
 
@@ -328,7 +345,6 @@ function SceneController({ media, onTextureProgress, gestureState, onPlaneClick 
     };
 
     const onMouseDown = (e: MouseEvent) => {
-      // Just start dragging - keep drift frozen at current value
       s.isDragging = true;
       s.lastMouse = { x: e.clientX, y: e.clientY };
       setCursor("grabbing");
@@ -424,32 +440,7 @@ function SceneController({ media, onTextureProgress, gestureState, onPlaneClick 
 
     const { forward, backward, left, right, up, down } = getKeys();
 
-    // Handle click detection
-    if (clickMouse.current.x !== 0 || clickMouse.current.y !== 0) {
-      raycaster.current.setFromCamera(clickMouse.current, camera);
-      const allMeshes: THREE.Object3D[] = [];
-      camera.traverse((obj) => {
-        if (obj instanceof THREE.Mesh) allMeshes.push(obj);
-      });
-      const intersects = raycaster.current.intersectObjects(allMeshes, false);
-      if (intersects.length > 0) {
-        const hit = intersects[0];
-        if (hit.object.visible && onPlaneClick) {
-          const currentChunks = chunksRef.current;
-          for (const chunk of currentChunks) {
-            const planes = generateChunkPlanesCached(chunk.cx, chunk.cy, chunk.cz);
-            for (const plane of planes) {
-              const mi = media[plane.mediaIndex % media.length];
-              if (mi && Math.abs(plane.position.x - hit.point.x) < plane.scale.x * 0.6 && Math.abs(plane.position.y - hit.point.y) < plane.scale.y * 0.6) {
-                onPlaneClick(mi);
-                break;
-              }
-            }
-          }
-        }
-      }
-      clickMouse.current.set(0, 0);
-    }
+
     if (forward) s.targetVel.z -= KEYBOARD_SPEED;
       if (gesture.forward) s.targetVel.z -= KEYBOARD_SPEED * gesture.velocity;
     if (backward) s.targetVel.z += KEYBOARD_SPEED;
@@ -558,6 +549,11 @@ export function InfiniteCanvasScene({ media, onTextureProgress, showFps = false,
   const handlePlaneClick = React.useCallback((item: MediaItem | null) => {
     setSelectedArtwork(item);
   }, []);
+
+  React.useEffect(() => {
+    setOnPlaneClick(handlePlaneClick);
+    return () => setOnPlaneClick(null);
+  }, [handlePlaneClick]);
   const isTouchDevice = useIsTouchDevice();
   const dpr = Math.min(window.devicePixelRatio || 1, isTouchDevice ? 1.25 : 1.5);
 
