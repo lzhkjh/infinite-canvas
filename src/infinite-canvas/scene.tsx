@@ -92,6 +92,8 @@ function MediaPlane({
 
   const [texture, setTexture] = React.useState<THREE.Texture | null>(null);
   const [isReady, setIsReady] = React.useState(false);
+  const [thumbnail, setThumbnail] = React.useState<THREE.Texture | null>(null);
+  const isVideo = media.type === "video";
 
   useFrame(() => {
     const material = materialRef.current;
@@ -163,12 +165,47 @@ function MediaPlane({
       material.map = null;
     }
 
-    const tex = getTexture(media, () => {
-      state.ready = true;
-      setIsReady(true);
-    });
-
-    setTexture(tex);
+    if (isVideo) {
+      // Load first frame as thumbnail for video
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        const vid = document.createElement("video");
+        vid.crossOrigin = "anonymous";
+        vid.src = media.url;
+        vid.muted = true;
+        vid.playsInline = true;
+        vid.currentTime = 0.1;
+        vid.addEventListener("seeked", () => {
+          canvas.width = 640;
+          canvas.height = 360;
+          ctx.drawImage(vid, 0, 0, 640, 360);
+          const tex = new THREE.CanvasTexture(canvas);
+          tex.colorSpace = THREE.SRGBColorSpace;
+          setThumbnail(tex);
+          state.ready = true;
+          setIsReady(true);
+          vid.remove();
+        });
+        vid.addEventListener("error", () => {
+          // Fallback: dark gray
+          canvas.width = 640;
+          canvas.height = 360;
+          ctx.fillStyle = "#222";
+          ctx.fillRect(0, 0, 640, 360);
+          const tex = new THREE.CanvasTexture(canvas);
+          setThumbnail(tex);
+          state.ready = true;
+          setIsReady(true);
+        });
+      }
+    } else {
+      const tex = getTexture(media, () => {
+        state.ready = true;
+        setIsReady(true);
+      });
+      setTexture(tex);
+    }
   }, [media]);
 
   // Apply texture when ready
@@ -181,13 +218,17 @@ function MediaPlane({
       return;
     }
 
-    material.map = texture;
+    if (texture) {
+      material.map = texture;
+    } else if (isVideo && thumbnail) {
+      material.map = thumbnail;
+    }
     material.opacity = state.opacity;
     material.depthWrite = state.opacity >= 1;
     mesh.scale.copy(displayScale);
-  }, [displayScale, texture, isReady]);
+  }, [displayScale, texture, isReady, thumbnail, isVideo]);
 
-  if (!texture || !isReady) {
+  if (!isReady) {
     return null;
   }
 
@@ -544,9 +585,14 @@ if (gesture.up) s.targetVel.y += KEYBOARD_SPEED * gesture.velocity;
 
 export function InfiniteCanvasScene({ media, onTextureProgress, showFps = false, showControls = false, cameraFov = 60, cameraNear = 1, cameraFar = 500, fogNear = 120, fogFar = 320, backgroundColor = "#ffffff", fogColor = "#ffffff", gestureState }: InfiniteCanvasProps & { gestureState?: any }) {
   const [selectedArtwork, setSelectedArtwork] = React.useState<any>(null);
+  const [activeVideo, setActiveVideo] = React.useState<string | null>(null);
 
   const handlePlaneClick = React.useCallback((item: MediaItem | null) => {
-    setSelectedArtwork(item);
+    if (item && item.type === "video") {
+      setActiveVideo(item.url);
+    } else {
+      setSelectedArtwork(item);
+    }
   }, []);
 
   React.useEffect(() => {
@@ -590,8 +636,39 @@ export function InfiniteCanvasScene({ media, onTextureProgress, showFps = false,
           </div>
         )}
         <ArtworkDetail artwork={selectedArtwork} onClose={() => setSelectedArtwork(null)} />
-      </div>
 
+        {/* Video Fullscreen Overlay */}
+        {activeVideo && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0, left: 0,
+              width: "100vw", height: "100vh",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 10000,
+              background: "rgba(0,0,0,0.9)",
+              cursor: "pointer",
+            }}
+            onClick={() => setActiveVideo(null)}
+          >
+            <video
+              key={activeVideo}
+              src={activeVideo}
+              autoPlay
+              loop
+              controls
+              style={{
+                maxWidth: "90vw",
+                maxHeight: "90vh",
+                borderRadius: 8,
+                boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+              }}
+            />
+          </div>
+        )}
+      </div>
     </KeyboardControls>
   );
 }

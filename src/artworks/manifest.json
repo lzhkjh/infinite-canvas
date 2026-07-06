@@ -1,86 +1,93 @@
-﻿[
-  {
-    "url": "artworks/img1.jpg",
-    "type": "image",
-    "title": "温馨小角落",
-    "width": 6000,
-    "height": 4000
-  },
-  {
-    "url": "artworks/img2.jpg",
-    "type": "image",
-    "title": "可爱的装饰板",
-    "width": 6000,
-    "height": 4000
-  },
-  {
-    "url": "artworks/img3.jpg",
-    "type": "image",
-    "title": "手绘甜品",
-    "width": 6000,
-    "height": 4000
-  },
-  {
-    "url": "artworks/img4.jpg",
-    "type": "image",
-    "title": "公仔展示架",
-    "width": 6000,
-    "height": 4000
-  },
-  {
-    "url": "artworks/img5.jpg",
-    "type": "image",
-    "title": "手写黑板",
-    "width": 6000,
-    "height": 4000
-  },
-  {
-    "url": "artworks/img6.jpg",
-    "type": "image",
-    "title": "祝福卡片墙",
-    "width": 6000,
-    "height": 4000
-  },
-  {
-    "url": "artworks/img7.jpg",
-    "type": "image",
-    "title": "手绘插画",
-    "width": 6000,
-    "height": 4000
-  },
-  {
-    "url": "artworks/img8.jpg",
-    "type": "image",
-    "title": "留言墙",
-    "width": 6000,
-    "height": 4000
-  },
-  {
-    "url": "artworks/img9.jpg",
-    "type": "image",
-    "title": "满墙的明信片",
-    "width": 6000,
-    "height": 4000
-  },
-  {
-    "url": "artworks/img10.jpg",
-    "type": "image",
-    "title": "面包店吧台",
-    "width": 6000,
-    "height": 4000
-  },
-  {
-    "url": "artworks/img11.jpg",
-    "type": "image",
-    "title": "手绘美食墙",
-    "width": 6000,
-    "height": 4000
-  },
-  {
-    "url": "artworks/img12.jpg",
-    "type": "image",
-    "title": "纸艺锦鲤",
-    "width": 6000,
-    "height": 4000
-  }
+[
+    {
+        "url": "artworks/img1.jpg",
+        "type": "image",
+        "title": "温馨小角落",
+        "width": 6000,
+        "height": 4000
+    },
+    {
+        "url": "artworks/img2.jpg",
+        "type": "image",
+        "title": "可爱的装饰板",
+        "width": 6000,
+        "height": 4000
+    },
+    {
+        "url": "artworks/img3.jpg",
+        "type": "image",
+        "title": "手绘甜品",
+        "width": 6000,
+        "height": 4000
+    },
+    {
+        "url": "artworks/img4.jpg",
+        "type": "image",
+        "title": "公仔展示架",
+        "width": 6000,
+        "height": 4000
+    },
+    {
+        "url": "artworks/img5.jpg",
+        "type": "image",
+        "title": "手写黑板",
+        "width": 6000,
+        "height": 4000
+    },
+    {
+        "url": "artworks/img6.jpg",
+        "type": "image",
+        "title": "祝福卡片墙",
+        "width": 6000,
+        "height": 4000
+    },
+    {
+        "url": "artworks/img7.jpg",
+        "type": "image",
+        "title": "手绘插画",
+        "width": 6000,
+        "height": 4000
+    },
+    {
+        "url": "artworks/img8.jpg",
+        "type": "image",
+        "title": "留言墙",
+        "width": 6000,
+        "height": 4000
+    },
+    {
+        "url": "artworks/img9.jpg",
+        "type": "image",
+        "title": "满墙的明信片",
+        "width": 6000,
+        "height": 4000
+    },
+    {
+        "url": "artworks/img10.jpg",
+        "type": "image",
+        "title": "面包店吧台",
+        "width": 6000,
+        "height": 4000
+    },
+    {
+        "url": "artworks/img11.jpg",
+        "type": "image",
+        "title": "手绘美食墙",
+        "width": 6000,
+        "height": 4000
+    },
+    {
+        "url": "artworks/img12.jpg",
+        "type": "image",
+        "title": "纸艺锦鲤",
+        "width": 6000,
+        "height": 4000
+    },
+    {
+        "url": "/infinite-canvas/videos/2.2.mp4",
+        "type": "video",
+        "title": "??2",
+        "width": 6000,
+        "height": 4000
+    }
 ]
