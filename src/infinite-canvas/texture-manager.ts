@@ -6,7 +6,7 @@ const loadCallbacks = new Map<string, Set<(tex: THREE.Texture) => void>>();
 const loader = new THREE.TextureLoader();
 
 // Base path for GitHub Pages deployment
-const BASE_PATH = "";
+const BASE_PATH = "/infinite-canvas/";
 
 const isTextureLoaded = (tex: THREE.Texture): boolean => {
   const img = tex.image as HTMLImageElement | undefined;

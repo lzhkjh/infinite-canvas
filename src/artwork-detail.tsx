@@ -1,4 +1,4 @@
-ï»¿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { MediaItem } from "~/src/infinite-canvas/types";
 
 interface ArtworkDetailProps {
@@ -99,7 +99,7 @@ export function ArtworkDetail({ artwork, onClose }: ArtworkDetailProps) {
             boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
           }}
         >
-          Ã—
+          ¡Á
         </button>
 
         <div
@@ -133,7 +133,7 @@ export function ArtworkDetail({ artwork, onClose }: ArtworkDetailProps) {
               maxWidth: "100%",
               maxHeight: "420px",
               objectFit: "contain",
-              borderRadius: "28px",
+              borderRadius: "12px",
               boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
               opacity: loaded ? 1 : 0,
               transition: "opacity 0.5s ease",
@@ -192,15 +192,15 @@ export function ArtworkDetail({ artwork, onClose }: ArtworkDetailProps) {
             </div>
             <div style={{ padding: "2px 0" }}>
               <span style={{ color: "#999", marginRight: "8px" }}>ARTWORK DATE</span>
-              <span style={{ color: "#333" }}>â€”</span>
+              <span style={{ color: "#333" }}>¡ª</span>
             </div>
             <div style={{ padding: "2px 0" }}>
               <span style={{ color: "#999", marginRight: "8px" }}>ADDED TO CANVAS</span>
-              <span style={{ color: "#333" }}>â€”</span>
+              <span style={{ color: "#333" }}>¡ª</span>
             </div>
             <div style={{ padding: "2px 0" }}>
               <span style={{ color: "#999", marginRight: "8px" }}>NOTES</span>
-              <span style={{ color: "#333" }}>â€”</span>
+              <span style={{ color: "#333" }}>¡ª</span>
             </div>
           </div>
 
@@ -208,8 +208,8 @@ export function ArtworkDetail({ artwork, onClose }: ArtworkDetailProps) {
 
           <div style={{ fontSize: "13px", color: "#666", lineHeight: 1.8 }}>
             <div style={{ padding: "2px 0" }}>
-              <span style={{ color: "#999", marginRight: "8px" }}>å°ºå¯¸</span>
-              <span style={{ fontFamily: "monospace" }}>{artwork.width} Ã— {artwork.height}</span>
+              <span style={{ color: "#999", marginRight: "8px" }}>³ß´ç</span>
+              <span style={{ fontFamily: "monospace" }}>{artwork.width} ¡Á {artwork.height}</span>
             </div>
           </div>
         </div>

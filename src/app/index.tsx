@@ -25,7 +25,7 @@ export function App() {
 
   // Create audio ONCE on mount
   React.useEffect(() => {
-    const audio = new Audio("/music.mp3");
+    const audio = new Audio("/infinite-canvas/music.mp3");
     audio.loop = true;
     audio.preload = "auto";
     audio.volume = volume;
