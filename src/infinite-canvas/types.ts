@@ -1,0 +1,52 @@
+export interface GestureState {
+  forward: boolean;
+  backward: boolean;
+  left: boolean;
+  right: boolean;
+  up: boolean;
+  down: boolean;
+  velocity: number;
+}
+
+import type * as THREE from "three";
+
+export type MediaItem = {
+  url: string;
+  width: number;
+  height: number;
+  title?: string;
+  artist?: string;
+  year?: string;
+  link?: string;
+  type?: string;
+};
+
+export type InfiniteCanvasProps = {
+  gestureState?: GestureState;
+  media: MediaItem[];
+  onTextureProgress?: (progress: number) => void;
+  showFps?: boolean;
+  showControls?: boolean;
+  onPlaneClick?: (mediaItem: MediaItem | null) => void;
+  cameraFov?: number;
+  cameraNear?: number;
+  cameraFar?: number;
+  fogNear?: number;
+  fogFar?: number;
+  backgroundColor?: string;
+  fogColor?: string;
+};
+
+export type ChunkData = {
+  key: string;
+  cx: number;
+  cy: number;
+  cz: number;
+};
+
+export type PlaneData = {
+  id: string;
+  position: THREE.Vector3;
+  scale: THREE.Vector3;
+  mediaIndex: number;
+};
