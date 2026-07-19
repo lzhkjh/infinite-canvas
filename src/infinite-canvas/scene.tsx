@@ -131,7 +131,6 @@ function MediaPlane({
 
     state.opacity = target < INVIS_THRESHOLD && state.opacity < INVIS_THRESHOLD ? 0 : lerp(state.opacity, target, 0.18);
 
-    const isFullyOpaque = state.opacity > 0.99;
     material.uniforms.uOpacity.value = state.opacity;
     mesh.visible = state.opacity > INVIS_THRESHOLD;
   });
